@@ -1,0 +1,11 @@
+# Лидарная одометрия RTAB-Map (режим odom_source:=icp или leg). Дополняет rtabmap_common.yaml.
+/**:
+  ros__parameters:
+    Odom/Strategy: "0"                 # 0 = frame-to-map
+    Odom/ScanKeyFrameThr: "0.4"        # новый ключевой скан, когда совпадение < 40 %
+    OdomF2M/ScanSubtractRadius: "0.1"
+    OdomF2M/ScanMaxSize: "15000"
+    OdomF2M/BundleAdjustment: "false"
+    Odom/ResetCountdown: "1"           # авто-сброс при потере
+    Icp/CorrespondenceRatio: "0.1"
+    publish_null_when_lost: false

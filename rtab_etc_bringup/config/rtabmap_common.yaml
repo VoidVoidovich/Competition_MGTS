@@ -1,0 +1,59 @@
+# Общие параметры RTAB-Map (для узлов rtabmap, rtabmap_viz, icp_odometry).
+# Параметры библиотеки RTAB-Map задаются СТРОКАМИ. Полный список: ros2 run rtabmap_slam rtabmap --params
+/**:
+  ros__parameters:
+    use_sim_time: true
+    approx_sync: true
+    approx_sync_max_interval: 0.05     # с; камера и лидар не синхронны аппаратно
+    topic_queue_size: 30
+    sync_queue_size: 30
+    wait_for_transform: 0.5
+
+    # --- регистрация (рёбра графа) ---
+    Reg/Strategy: "1"                  # 0 = визуальная, 1 = ICP по лидару, 2 = визуальная + ICP
+    Reg/Force3DoF: "false"             # собака качается, нужен полный 6DoF
+    Icp/PointToPlane: "true"
+    Icp/VoxelSize: "0.1"               # м; для помещений 0.05–0.1, для улицы 0.2–0.3
+    Icp/PointToPlaneK: "20"
+    Icp/PointToPlaneRadius: "0"
+    Icp/Iterations: "10"
+    Icp/Epsilon: "0.001"
+    Icp/MaxTranslation: "3"            # м, отбрасываем «прыгнувшие» совмещения
+    Icp/MaxCorrespondenceDistance: "1"
+    Icp/OutlierRatio: "0.7"
+    Icp/CorrespondenceRatio: "0.2"     # доля совпавших точек, ниже — ребро отвергается
+    Mem/LaserScanNormalK: "20"
+
+    # --- граф и петли ---
+    RGBD/LinearUpdate: "0.1"           # новый узел каждые 0.1 м
+    RGBD/AngularUpdate: "0.05"         # или каждые ~3 градуса
+    RGBD/ProximityBySpace: "true"      # лидарные петли по близости (без камеры)
+    RGBD/ProximityMaxGraphDepth: "0"
+    RGBD/ProximityPathMaxNeighbors: "1"
+    RGBD/OptimizeMaxError: "3.0"       # отбрасывать петли с большой невязкой (защита от ложных)
+    Mem/STMSize: "30"
+    Mem/NotLinkedNodesKept: "false"
+    Optimizer/Strategy: "2"            # 0 = TORO, 1 = g2o, 2 = GTSAM
+    Optimizer/GravitySigma: "0.3"      # учёт гравитации от IMU (крен и тангаж)
+
+    # --- визуальная часть (если камера подключена) ---
+    Kp/MaxFeatures: "500"
+    Vis/MinInliers: "15"
+
+    # --- 2D-карта занятости из 3D-облака ---
+    RGBD/CreateOccupancyGrid: "true"
+    Grid/Sensor: "0"                   # 0 = лидар, 1 = камера (глубина), 2 = оба
+    Grid/3D: "false"                   # 2D-проекция для Nav2
+    Grid/CellSize: "0.05"
+    Grid/RangeMax: "20"
+    Grid/NormalsSegmentation: "false"  # пол/препятствия по высоте (проще и надёжнее)
+    Grid/MaxGroundHeight: "0.1"        # м над base_link — ниже считаем полом
+    Grid/MaxObstacleHeight: "1.5"      # выше — игнорируем (потолок, лампы)
+    Grid/RayTracing: "true"            # стирание ушедших людей
+    Grid/ClusterRadius: "0.1"
+    Grid/MinClusterSize: "5"           # убирает одиночные шумовые точки
+
+    # --- маркеры как ориентиры (включить, если пивоты окажутся ArUco / AprilTag) ---
+    RGBD/MarkerDetection: "false"
+    Marker/Dictionary: "0"             # 0 = DICT_4X4_50; см. --params
+    Marker/Length: "0"                 # м; 0 = неизвестен

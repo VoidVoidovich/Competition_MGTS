@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.8)
+project(rtab_etc_bringup)
+find_package(ament_cmake REQUIRED)
+install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
+install(PROGRAMS scripts/cloud_fix.py scripts/inspect_bag.py scripts/export_results.sh DESTINATION lib/${PROJECT_NAME})
+ament_package()

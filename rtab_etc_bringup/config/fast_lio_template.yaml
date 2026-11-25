@@ -1,0 +1,52 @@
+# Шаблон конфига FAST-LIO (ROS 2: ветка ROS2 hku-mars/FAST_LIO или Ericsii/FAST_LIO_ROS2).
+# Скопировать в config/ пакета fast_lio и запускать:
+#   ros2 launch fast_lio mapping.launch.py config_file:=razgrom.yaml use_sim_time:=true rviz:=false
+# Структура ключей сверена с примерами velodyne.yaml/ouster64.yaml — перед соревнованием сравните со своей версией.
+/**:
+  ros__parameters:
+    feature_extract_enable: false
+    point_filter_num: 3                # брать каждую 3-ю точку (2–4)
+    max_iteration: 3
+    filter_size_surf: 0.3              # помещения 0.2–0.3, улица 0.5
+    filter_size_map: 0.3
+    cube_side_length: 1000.0
+    runtime_pos_log_enable: false
+    map_file_path: "./razgrom_map.pcd"
+
+    common:
+      lid_topic: "/lidar/points"       # ← ПОДСТАВИТЬ (sensor_msgs/PointCloud2)
+      imu_topic: "/imu/data"           # ← ПОДСТАВИТЬ
+      time_sync_en: false              # true только если лидар и IMU вообще не синхронизированы
+      time_offset_lidar_to_imu: 0.0
+
+    preprocess:
+      lidar_type: 2                    # 1 = Livox (CustomMsg), 2 = Velodyne, 3 = Ouster (+ другие в вашей версии)
+      scan_line: 32                    # число лучей лидара (16/32/64/128)
+      scan_rate: 10                    # Гц
+      timestamp_unit: 2                # единицы поля времени точки: 0 = с, 1 = мс, 2 = мкс, 3 = нс
+      blind: 0.5                       # м; отсечь точки корпуса собаки (0.3–0.8)
+
+    mapping:
+      acc_cov: 0.1
+      gyr_cov: 0.1
+      b_acc_cov: 0.0001
+      b_gyr_cov: 0.0001
+      fov_degree: 360.0
+      det_range: 100.0
+      extrinsic_est_en: true           # дооценивать лидар–IMU на ходу (если tf неточный)
+      extrinsic_T: [0.0, 0.0, 0.0]     # ← из /tf_static: положение лидара в системе IMU
+      extrinsic_R: [1.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    0.0, 0.0, 1.0]
+
+    publish:
+      path_en: true
+      effect_map_en: false
+      map_en: true
+      scan_publish_en: true
+      dense_publish_en: true
+      scan_bodyframe_pub_en: true      # нужно: /cloud_registered_body идёт в RTAB-Map
+
+    pcd_save:
+      pcd_save_en: true
+      interval: -1
